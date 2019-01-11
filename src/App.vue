@@ -1,29 +1,29 @@
 <template>
   <div id="app">
-    <MessageForm
-      v-bind:name="name"
-      v-bind:nameError="nameError"
-      v-bind:password="password"
-      v-bind:passwordError="passwordError"
-      v-bind:message="message"
-      v-bind:messageError="messageError"
-      v-bind:isEditting="isEditting"
-      v-bind:onChange="onInputChange"
-      v-bind:onSubmit="onSubmit"
-      v-bind:onCancel="onEditCancel"
-    ></MessageForm>
-    <MessageList
-      v-bind:messageList="messageList"
-      v-bind:onEditClick="onEditClick"
-      v-bind:onDeleteClick="onDeleteClick"
-    ></MessageList>
-    <CustomModal
-      v-bind:isOpen="isModalOpen"
-      v-bind:variation="modalVariation"
-      v-bind:message="modalMessage"
-      v-bind:onConfirm="modalVariation === 'passwordPrompt' ? onDeleteConfirm : resetModal"
-      v-bind:onCancel="resetModal"
-    ></CustomModal>
+    <message-form
+      :username="username"
+      :usernameError="usernameError"
+      :password="password"
+      :passwordError="passwordError"
+      :message="message"
+      :messageError="messageError"
+      :isEditting="isEditting"
+      :onChange="onInputChange"
+      :onSubmit="onSubmit"
+      :onCancel="onEditCancel"
+    ></message-form>
+    <message-list
+      :messageList="messageList"
+      :onEditClick="onEditClick"
+      :onDeleteClick="onDeleteClick"
+    ></message-list>
+    <custom-modal
+      :isOpen="isModalOpen"
+      :variation="modalVariation"
+      :message="modalMessage"
+      :onConfirm="modalVariation === 'passwordPrompt' ? onDeleteConfirm : resetModal"
+      :onCancel="resetModal"
+    ></custom-modal>
   </div>
 </template>
 
@@ -43,8 +43,8 @@ export default {
 
   data() {
     return {
-      name: '',
-      nameError: '',
+      username: '',
+      usernameError: '',
       password: '',
       passwordError: '',
       message: '',
@@ -60,15 +60,15 @@ export default {
 
   methods: {
     resetForm() {
-      this.name = '';
-      this.nameError = '';
+      this.username = '';
+      this.usernameError = '';
       this.password = '';
       this.passwordError = '';
       this.message = '';
       this.messageError = '';
       this.isEditting = false;
       this.selectedIndex = null;
-      document.getElementById('name').focus();
+      document.getElementById('username').focus();
     },
 
     resetModal() {
@@ -93,12 +93,12 @@ export default {
 
     onSubmit(e) {
       e.preventDefault();
-      const { name, password, message, isEditting, selectedIndex } = this;
+      const { username, password, message, isEditting, selectedIndex } = this;
       let isValid = true;
 
       /** validation */
-      if (!name) {
-        this.nameError = '이름을 입력하세요.';
+      if (!username) {
+        this.usernameError = '이름을 입력하세요.';
         isValid = isValid && false;
       }
       if (!password) {
@@ -119,7 +119,12 @@ export default {
 
         // when passwords match
         if (selectedItem.password === password) {
-          const editted = { name, password, message, created: selectedItem.created };
+          const editted = {
+            username,
+            password,
+            message,
+            createdAt: selectedItem.createdAt
+          };
           this.messageList.splice(selectedIndex, 1, editted);
           this.resetForm();
         // when passwords wrong
@@ -129,7 +134,12 @@ export default {
 
       /** NEW */
       } else {
-        this.messageList.unshift({ name, password, message, created: new Date() });
+        this.messageList.unshift({
+          username,
+          password,
+          message,
+          createdAt: new Date()
+        });
         this.resetForm();
       }
     },
@@ -140,12 +150,12 @@ export default {
     },
 
     onEditClick(index) {
-      const { name, message } = this.messageList[index];
-      this.name = name;
+      const { username, message } = this.messageList[index];
+      this.username = username;
       this.message = message;
       this.isEditting = true;
       this.selectedIndex = index;
-      document.getElementById('name').focus();
+      document.getElementById('username').focus();
     },
 
     onDeleteClick(index) {
